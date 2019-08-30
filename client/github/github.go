@@ -7,15 +7,16 @@ import (
 
 	"github.com/JustSomeHack/git_cli/client/http"
 	"github.com/JustSomeHack/git_cli/models"
+	"github.com/JustSomeHack/git_cli/models/github"
 )
 
 // GitHub interface for API client
 type GitHub interface {
+	GetProjects(org string, owner string, repo string) ([]github.Project, error)
 	GetUsers() (map[string]interface{}, error)
-	GetProjects() (map[string]interface{}, error)
 	PrintCommits(projectID int)
 	PrintGroups()
-	PrintProjects()
+	PrintProjects(org string, owner string, repo string)
 	PrintRequests()
 	PrintUsers()
 }
@@ -33,12 +34,19 @@ func NewGitHub(url string, key string) GitHub {
 	}
 }
 
-func (g *gitHub) GetProjects() (map[string]interface{}, error) {
+func (g *gitHub) GetProjects(org string, owner string, repo string) ([]github.Project, error) {
+	projectsURL := fmt.Sprintf("%s/repos/%s/%s/projects", g.BaseURL, owner, repo)
+	if org != "" {
+		projectsURL = fmt.Sprintf("%s/orgs/%s/projects", g.BaseURL, org)
+	}
+	if repo == "" && org == "" {
+		projectsURL = fmt.Sprintf("%s/users/%s/projects", g.BaseURL, owner)
+	}
 	params := &models.HTTPParams{
-		URL:                 g.BaseURL + "/user/memberships/orgs",
+		URL:                 projectsURL,
 		AuthorizationBearer: g.AccessKey,
 		Headers: map[string]string{
-			"Accept": "application/vnd.github.v3+json",
+			"Accept": "application/vnd.github.inertia-preview+json",
 		},
 	}
 
@@ -49,7 +57,7 @@ func (g *gitHub) GetProjects() (map[string]interface{}, error) {
 	}
 
 	fmt.Printf("%s\n", res)
-	users := make(map[string]interface{}, 0)
+	users := make([]github.Project, 0)
 	err = json.Unmarshal(res, &users)
 	if err != nil {
 		return nil, err
@@ -89,8 +97,14 @@ func (g *gitHub) PrintGroups() {
 
 }
 
-func (g *gitHub) PrintProjects() {
-
+func (g *gitHub) PrintProjects(org string, owner string, repo string) {
+	projects, err := g.GetProjects(org, owner, repo)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, project := range projects {
+		fmt.Printf("%s\n", project.Name)
+	}
 }
 
 func (g *gitHub) PrintRequests() {

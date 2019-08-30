@@ -11,7 +11,7 @@ type CLI interface {
 	CreateRequest(projectID int, targetProjectID int, assigneeID int, source string, target string, title string, description string)
 	PrintCommits(projectID int)
 	PrintGroups()
-	PrintProjects()
+	PrintProjects(org string, owner string, repo string)
 	PrintRequests()
 	PrintUsers()
 }
@@ -59,11 +59,11 @@ func (c *cli) PrintGroups() {
 	}
 }
 
-func (c *cli) PrintProjects() {
+func (c *cli) PrintProjects(org string, owner string, repo string) {
 	if c.IsGitLab {
 		c.GitLab.PrintProjects()
 	} else {
-		c.GitHub.PrintProjects()
+		c.GitHub.PrintProjects(org, owner, repo)
 	}
 }
 

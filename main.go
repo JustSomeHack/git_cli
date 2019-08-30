@@ -42,6 +42,10 @@ func main() {
 	title := flag.String("title", "", "Request title, required for request")
 	description := flag.String("description", "", "Request description")
 
+	orgID := flag.String("org", "", "GitHub organization ID")
+	ownerID := flag.String("owner", "", "GitHub owner ID")
+	repoID := flag.String("repo", "", "GitHub repo ID")
+
 	listCommits := flag.Bool("list-commits", false, "List commits for a project")
 	listGroups := flag.Bool("list-groups", false, "List groups")
 	listProjects := flag.Bool("list-projects", false, "List projects")
@@ -85,7 +89,7 @@ func main() {
 	}
 
 	if *listProjects {
-		cli.PrintProjects()
+		cli.PrintProjects(*orgID, *ownerID, *repoID)
 	}
 
 	if *listRequests {
