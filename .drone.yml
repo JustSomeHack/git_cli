@@ -1,0 +1,15 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build
+    image: golang:latest
+    commands:
+      - GOOS=darwin GOARCH=amd64 go build -v -a -o build/macos/git_cli
+      - GOOS=linux GOARCH=amd64 go build -v -a -o build/linux/git_cli
+      - GOOS=windows GOARCH=amd64 go build -v -a -o build/windows/git_cli
+    when:
+      branch:
+        - master
+      event:
+        - push
