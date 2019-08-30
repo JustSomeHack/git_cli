@@ -1,6 +1,9 @@
 package client
 
-import "github.com/JustSomeHack/git_cli/client/gitlab"
+import (
+	"github.com/JustSomeHack/git_cli/client/github"
+	"github.com/JustSomeHack/git_cli/client/gitlab"
+)
 
 // CLI interface for git API
 type CLI interface {
@@ -15,6 +18,7 @@ type CLI interface {
 
 type cli struct {
 	IsGitLab bool
+	GitHub   github.GitHub
 	GitLab   gitlab.GitLab
 }
 
@@ -22,6 +26,7 @@ type cli struct {
 func NewCLI(isGitLab bool, baseURL string, accessKey string) CLI {
 	return &cli{
 		IsGitLab: isGitLab,
+		GitHub:   github.NewGitHub(baseURL, accessKey),
 		GitLab:   gitlab.NewGitLab(baseURL, accessKey),
 	}
 }
@@ -41,29 +46,39 @@ func (c *cli) CreateRequest(projectID int, targetProjectID int, assigneeID int, 
 func (c *cli) PrintCommits(projectID int) {
 	if c.IsGitLab {
 		c.GitLab.PrintCommits(projectID)
+	} else {
+		c.GitHub.PrintCommits(projectID)
 	}
 }
 
 func (c *cli) PrintGroups() {
 	if c.IsGitLab {
 		c.GitLab.PrintGroups()
+	} else {
+		c.GitHub.PrintGroups()
 	}
 }
 
 func (c *cli) PrintProjects() {
 	if c.IsGitLab {
 		c.GitLab.PrintProjects()
+	} else {
+		c.GitHub.PrintProjects()
 	}
 }
 
 func (c *cli) PrintRequests() {
 	if c.IsGitLab {
 		c.GitLab.PrintRequests()
+	} else {
+		c.GitHub.PrintRequests()
 	}
 }
 
 func (c *cli) PrintUsers() {
 	if c.IsGitLab {
 		c.GitLab.PrintUsers()
+	} else {
+		c.GitHub.PrintUsers()
 	}
 }
