@@ -23,11 +23,11 @@ type HTTPClient interface {
 }
 
 type hTTPClient struct {
-	Params models.HTTPParams
+	Params *models.HTTPParams
 }
 
 // NewHTTPClient returns a new http client
-func NewHTTPClient(params models.HTTPParams) HTTPClient {
+func NewHTTPClient(params *models.HTTPParams) HTTPClient {
 	return &hTTPClient{
 		Params: params,
 	}
